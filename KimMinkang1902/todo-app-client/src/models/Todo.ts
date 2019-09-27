@@ -1,9 +1,3 @@
-export const StatType = {
-  ACTIVE: "active",
-  DONE: "done",
-  BOOKMARKED: "bookmarked"
-};
-
 export default class Todo {
   public id: string;
   public text: string;

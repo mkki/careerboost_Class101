@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaPen, FaTrashAlt, FaStar } from "react-icons/fa";
 import { EDIT_TODO_STAT, EDIT_TODO_TEXT, DELETE_TODO } from "../queries";
 import { useMutation } from "@apollo/react-hooks";
-import { StatType } from "../models/Todo";
+import { StatType } from "../constants";
 import { observer } from "mobx-react";
 
 const StyledTodoItem = styled.div`

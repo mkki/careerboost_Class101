@@ -5,5 +5,6 @@ export { default as FolderItem } from "./FolderItem";
 export { default as FolderList } from "./FolderList";
 export { default as TodoItem } from "./TodoItem";
 export { default as TodoList } from "./TodoList";
-export { default as TodoInput } from "./TodoList";
-export { default as TodoFilter } from "./TodoList";
+export { default as TodoInput } from "./TodoInput";
+export { default as TodoFilter } from "./TodoFilter";
+export { default as TodoFilterList } from "./TodoFilterList";
