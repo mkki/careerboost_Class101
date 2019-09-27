@@ -1,12 +1,13 @@
 import { observable, action, computed } from "mobx";
 import RootStore from "./index";
 import { Todo } from "../models";
-import { StatType } from "../models/Todo";
+import { FilterType, StatType } from "../constants";
 
 class TodoStore {
   readonly root: RootStore;
   @observable public folderId: string = "";
   @observable public folderTitle: string = "";
+  @observable public filter: string = FilterType.ALL;
   @observable public todos: Array<Todo> = [];
 
   constructor(root: RootStore) {
@@ -53,22 +54,23 @@ class TodoStore {
   };
 
   @action
-  filterActiveTodo = () => {
-    this.todos = this.todos.filter(todo => todo.stat !== StatType.DONE);
+  setFilter = (filter: string) => {
+    this.filter = filter;
   };
 
-  @action
-  filterDoneTodo = () => {
-    this.todos = this.todos.filter(todo => todo.stat === StatType.DONE);
-  };
+  @computed
+  get activeTodos() {
+    return this.todos.filter(todo => todo.stat !== StatType.DONE);
+  }
 
-  @action
-  filterBookmarkedTodo = () => {
-    this.todos = this.todos.filter(todo => todo.stat === StatType.BOOKMARKED);
-  };
+  @computed
+  get doneTodos() {
+    return this.todos.filter(todo => todo.stat === StatType.DONE);
+  }
 
-  getTodo() {
-    return this.todos.slice();
+  @computed
+  get bookmaredTodos() {
+    return this.todos.filter(todo => todo.stat === StatType.BOOKMARKED);
   }
 }
 

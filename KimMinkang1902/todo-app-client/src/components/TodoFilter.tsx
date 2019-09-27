@@ -1,22 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { useStores } from "../stores";
 import TodoStore from "../stores/todo";
-import { GET_FOLDER_WITH_TODOS } from "../queries";
-import { useQuery } from "@apollo/react-hooks";
+import { observer } from "mobx-react";
 
-const StyledTodoFilter = styled.div`
-  display: flex;
-  max-width: 400px;
-  justify-content: space-around;
-  color: #5f6e78;
-  font-weight: 700;
-  margin: 15px auto;
-`;
-
-const StyledButtonWrap = styled.div`
-  margin: 0 10px;
-  width: 80px;
+const StyledFilter = styled.div`
+  margin: 0 5px;
 `;
 
 const StyledButton = styled.button`
@@ -24,10 +12,10 @@ const StyledButton = styled.button`
   color: #ebedee;
   font-weight: 700;
   width: 100%;
-  padding: 12px 0;
+  padding: 12px;
   border-radius: 3px;
   background-color: #cfd3d6;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   color: white;
   border: 0;
   cursor: pointer;
@@ -41,42 +29,20 @@ const StyledButton = styled.button`
 `;
 
 interface TodoFilterProps {
+  name: string;
   todoStore: TodoStore;
 }
 
-const TodoFilter: React.FC<TodoFilterProps> = ({ todoStore }) => {
-  const folderId = todoStore.folderId;
-  const { data } = useQuery(GET_FOLDER_WITH_TODOS, {
-    variables: { id: folderId }
-  });
-
-  const activeHandler = () => {
-    todoStore.initialize(folderId, data.folder.title, data.folder.todos);
-    todoStore.filterActiveTodo();
-  };
-  const doneHandler = () => {
-    todoStore.initialize(folderId, data.folder.title, data.folder.todos);
-    todoStore.filterDoneTodo();
-  };
-
-  const likeHandler = () => {
-    todoStore.initialize(folderId, data.folder.title, data.folder.todos);
-    todoStore.filterBookmarkedTodo();
+const TodoFilter: React.FC<TodoFilterProps> = observer(({ name, todoStore }) => {
+  const handleOnClick = () => {
+    todoStore.filter = name;
   };
 
   return (
-    <StyledTodoFilter>
-      <StyledButtonWrap onClick={activeHandler}>
-        <StyledButton type="button">Active</StyledButton>
-      </StyledButtonWrap>
-      <StyledButtonWrap onClick={doneHandler}>
-        <StyledButton type="button">Done</StyledButton>
-      </StyledButtonWrap>
-      <StyledButtonWrap onClick={likeHandler}>
-        <StyledButton type="button">Like</StyledButton>
-      </StyledButtonWrap>
-    </StyledTodoFilter>
+    <StyledFilter onClick={handleOnClick}>
+      <StyledButton type="button">{name.toUpperCase()}</StyledButton>
+    </StyledFilter>
   );
-};
+});
 
 export default TodoFilter;

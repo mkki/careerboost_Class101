@@ -5,7 +5,6 @@ import TodoInput from "./TodoInput";
 import TodoItem from "./TodoItem";
 import { observer } from "mobx-react";
 import { Todo } from "../models";
-import TodoFilter from "./TodoFilter";
 
 const StyledTodoList = styled.div`
   display: flex;
@@ -29,13 +28,20 @@ interface TodoListProps {
 }
 
 const TodoList: React.FC<TodoListProps> = observer(({ todoStore }) => {
+  const filteredTodos = () => {
+    const filter = todoStore.filter;
+    if (filter === "active") return todoStore.activeTodos;
+    if (filter === "done") return todoStore.doneTodos;
+    if (filter === "bookmarked") return todoStore.bookmaredTodos;
+    return todoStore.todos;
+  };
+
   return (
     <StyledTodoList>
-      <TodoFilter todoStore={todoStore} />
       <StyledFolderTitle>{todoStore.folderTitle}</StyledFolderTitle>
       <TodoInput folderId={todoStore.folderId} newTodo={todoStore.newTodo} />
 
-      {todoStore.todos.map((todo: Todo) => (
+      {filteredTodos().map((todo: Todo) => (
         <TodoItem
           {...todo}
           key={todo.id}
