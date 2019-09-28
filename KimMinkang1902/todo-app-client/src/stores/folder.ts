@@ -12,6 +12,9 @@ class FolderStore {
 
   @action
   initialize = (folders: Array<Folder>) => {
+    if (this.folders.length !== 0) {
+      return;
+    }
     this.folders = folders;
   };
 

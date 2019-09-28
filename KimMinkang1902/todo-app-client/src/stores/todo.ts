@@ -5,8 +5,8 @@ import { FilterType, StatType } from "../constants";
 
 class TodoStore {
   readonly root: RootStore;
-  @observable public folderId: string = "";
-  @observable public folderTitle: string = "";
+  public folderId: string = "";
+  public folderTitle: string = "";
   @observable public filter: string = FilterType.ALL;
   @observable public todos: Array<Todo> = [];
 
@@ -16,6 +16,9 @@ class TodoStore {
 
   @action
   initialize = (folderId: string, folderTitle: string, todos: Array<Todo>) => {
+    if (this.todos.length !== 0) {
+      return;
+    }
     this.folderId = folderId;
     this.folderTitle = folderTitle;
     this.todos = todos;
@@ -56,6 +59,17 @@ class TodoStore {
   @action
   setFilter = (filter: string) => {
     this.filter = filter;
+  };
+
+  @action
+  toggleEditing = (id: string) => {
+    this.todos = this.todos.map(todo => {
+      if (todo.id === id) {
+        todo.editing = !todo.editing;
+      }
+
+      return todo;
+    });
   };
 
   @computed

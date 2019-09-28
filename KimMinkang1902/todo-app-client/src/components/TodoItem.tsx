@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { FaPen, FaTrashAlt, FaStar } from "react-icons/fa";
 import { EDIT_TODO_STAT, EDIT_TODO_TEXT, DELETE_TODO } from "../queries";
@@ -65,21 +65,21 @@ interface TodoItemProps {
   id: string;
   text: string;
   stat: string;
+  editing: boolean;
   editTodoText: (id: string, text: string) => any;
   editTodoStat: (id: string, stat: string) => any;
   deleteTodo: (id: string) => any;
+  toggleEditing: (id: string) => any;
 }
 
 const TodoItem: React.FC<TodoItemProps> = observer(
-  ({ id, text, stat, editTodoText, editTodoStat, deleteTodo }) => {
-    const [editing, setEditing] = useState(false);
-    const [like, setLike] = useState(stat === StatType.BOOKMARKED);
-    const [done, setDone] = useState(stat === StatType.DONE);
-
+  ({ id, text, stat, editing, editTodoText, editTodoStat, deleteTodo, toggleEditing }) => {
     const inputRef = useRef<any>();
     const [editText] = useMutation(EDIT_TODO_TEXT);
     const [editStat] = useMutation(EDIT_TODO_STAT);
     const [removeTodo] = useMutation(DELETE_TODO);
+
+    const handleEdit = () => toggleEditing(id);
 
     const handleKeyPress = async (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -88,8 +88,6 @@ const TodoItem: React.FC<TodoItemProps> = observer(
           variables: { id: id, text: editedText }
         });
 
-        setEditing(false);
-        renderItem();
         const todo = item.data.editTodo;
         editTodoText(todo.id, editedText);
       }
@@ -106,60 +104,39 @@ const TodoItem: React.FC<TodoItemProps> = observer(
       deleteTodo(todo.id);
     };
 
-    const toggleLike = async (e: React.MouseEvent) => {
+    const handleToggleLike = async (e: React.MouseEvent) => {
       e.preventDefault();
 
-      let tempstat: string = StatType.BOOKMARKED;
-
-      if (like) {
-        setLike(false);
-        tempstat = StatType.ACTIVE;
-      } else {
-        setLike(true);
-      }
+      const editedStat = stat === StatType.BOOKMARKED ? StatType.ACTIVE : StatType.BOOKMARKED;
 
       const item = await editStat({
-        variables: { id: id, stat: tempstat }
-      });
-
-      renderIcon();
-      const todo = item.data.editTodo;
-      editTodoStat(todo.id, todo.stat);
-    };
-
-    const toggleDone = async (e: React.MouseEvent) => {
-      e.preventDefault();
-
-      let tempstat: string = StatType.DONE;
-
-      if (done) {
-        setDone(false);
-        tempstat = StatType.ACTIVE;
-      } else {
-        setDone(true);
-      }
-
-      const item = await editStat({
-        variables: { id: id, stat: tempstat }
+        variables: { id: id, stat: editedStat }
       });
 
       const todo = item.data.editTodo;
       editTodoStat(todo.id, todo.stat);
     };
 
-    const renderIcon = () => {
-      if (like && stat === StatType.BOOKMARKED) {
-        return <FaStar onClick={toggleLike} color="#d7c938" />;
-      }
-      return <FaStar onClick={toggleLike} />;
+    const handleToggleDone = async (e: React.MouseEvent) => {
+      e.preventDefault();
+
+      const editedStat = stat === StatType.DONE ? StatType.ACTIVE : StatType.DONE;
+
+      const item = await editStat({
+        variables: { id: id, stat: editedStat }
+      });
+
+      const todo = item.data.editTodo;
+      editTodoStat(todo.id, todo.stat);
     };
 
-    const renderItem = () => {
+    const renderTitle = () => {
       if (editing) {
         return <StyledEditing type="text" ref={inputRef} onKeyPress={handleKeyPress} />;
       }
+
       return (
-        <StyledText className={done && stat === StatType.DONE ? "done" : ""} onClick={toggleDone}>
+        <StyledText className={stat === StatType.DONE ? "done" : ""} onClick={handleToggleDone}>
           {text}
         </StyledText>
       );
@@ -167,11 +144,14 @@ const TodoItem: React.FC<TodoItemProps> = observer(
 
     return (
       <StyledTodoItem>
-        {renderItem()}
+        {renderTitle()}
         <StyledIcon>
-          <FaPen onClick={() => setEditing(true)} />
+          <FaPen onClick={handleEdit} />
           <FaTrashAlt onClick={handleDelete} />
-          {renderIcon()}
+          <FaStar
+            onClick={handleToggleLike}
+            color={stat === StatType.BOOKMARKED ? "#d7c938" : ""}
+          />
         </StyledIcon>
       </StyledTodoItem>
     );

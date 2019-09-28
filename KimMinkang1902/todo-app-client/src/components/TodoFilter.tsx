@@ -23,7 +23,7 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #acb4b9;
   }
-  &:active {
+  &.active {
     background-color: #7f8a93;
   }
 `;
@@ -40,7 +40,9 @@ const TodoFilter: React.FC<TodoFilterProps> = observer(({ name, todoStore }) => 
 
   return (
     <StyledFilter onClick={handleOnClick}>
-      <StyledButton type="button">{name.toUpperCase()}</StyledButton>
+      <StyledButton type="button" className={todoStore.filter === name ? "active" : ""}>
+        {name.toUpperCase()}
+      </StyledButton>
     </StyledFilter>
   );
 });
