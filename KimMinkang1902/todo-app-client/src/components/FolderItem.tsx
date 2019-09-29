@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { FaPen, FaTrashAlt } from "react-icons/fa";
-import { EDIT_FOLDER_TITLE, DELETE_FOLDER } from "../queries";
+import { FaPen } from "react-icons/fa";
+import { EDIT_FOLDER_TITLE } from "../queries";
 import { useMutation } from "@apollo/react-hooks";
+import FolderDeleteButton from "./FolderDeleteButton";
+import { observer } from "mobx-react";
 
 const StyledFolderItem = styled.li`
   display: flex;
@@ -70,64 +72,52 @@ interface FolderItemProps {
   deleteFolder: (id: string) => void;
 }
 
-const FolderItem: React.FC<FolderItemProps> = ({ id, title, editFolder, deleteFolder }) => {
-  const [editing, setEditing] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>("");
+const FolderItem: React.FC<FolderItemProps> = observer(
+  ({ id, title, editFolder, deleteFolder }) => {
+    const [editing, setEditing] = useState<boolean>(false);
+    const [inputValue, setInputValue] = useState<string>("");
 
-  const [editFolderTitle] = useMutation(EDIT_FOLDER_TITLE);
-  const [removeFolder] = useMutation(DELETE_FOLDER);
+    const [editFolderTitle] = useMutation(EDIT_FOLDER_TITLE);
 
-  const renderItem = () => {
-    if (editing) {
-      return (
-        <StyledEditing
-          type="text"
-          value={inputValue}
-          onChange={handleChange}
-          onKeyPress={handleKeyPress}
-        />
-      );
-    }
-    return <StyledLink to={`/folders/${id}`}>{title}</StyledLink>;
-  };
+    const handleEditClick = () => {
+      setEditing(true);
+    };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.currentTarget.value);
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.currentTarget.value);
-  };
+    const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && inputValue) {
+        const item = await editFolderTitle({
+          variables: { id: id, title: inputValue }
+        });
 
-  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue) {
-      const item = await editFolderTitle({
-        variables: { id: id, title: inputValue }
-      });
+        const folder = item.data.editFolder;
+        editFolder(folder.id, folder.title);
 
-      const folder = item.data.editFolder;
-      editFolder(folder.id, folder.title);
+        setEditing(false);
+      }
+    };
 
-      setEditing(false);
-    }
-  };
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    const item = await removeFolder({
-      variables: { id: id }
-    });
-
-    const folder = item.data.deleteFolder;
-    deleteFolder(folder.id);
-  };
-
-  return (
-    <StyledFolderItem>
-      {renderItem()}
-      <StyledIcon>
-        <FaPen onClick={() => setEditing(true)} />
-        <FaTrashAlt onClick={handleDelete} />
-      </StyledIcon>
-    </StyledFolderItem>
-  );
-};
+    return (
+      <StyledFolderItem>
+        {editing ? (
+          <StyledEditing
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
+          />
+        ) : (
+          <StyledLink to={`/folders/${id}`}>{title}</StyledLink>
+        )}
+        <StyledIcon>
+          <FaPen onClick={handleEditClick} />
+          <FolderDeleteButton id={id} deleteFolder={deleteFolder} />
+        </StyledIcon>
+      </StyledFolderItem>
+    );
+  }
+);
 
 export default FolderItem;

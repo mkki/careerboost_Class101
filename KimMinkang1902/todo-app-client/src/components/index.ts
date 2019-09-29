@@ -1,10 +1,12 @@
 export { default as Error } from "./Error";
 export { default as Header } from "./Header";
 export { default as Loading } from "./Loading";
+export { default as FolderDeleteButton } from "./FolderDeleteButton";
 export { default as FolderItem } from "./FolderItem";
 export { default as FolderList } from "./FolderList";
 export { default as TodoItem } from "./TodoItem";
 export { default as TodoList } from "./TodoList";
 export { default as TodoInput } from "./TodoInput";
+export { default as TodoDeleteButton } from "./TodoDeleteButton";
 export { default as TodoFilter } from "./TodoFilter";
 export { default as TodoFilterList } from "./TodoFilterList";

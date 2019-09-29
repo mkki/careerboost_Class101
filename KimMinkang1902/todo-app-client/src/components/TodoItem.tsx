@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { FaPen, FaTrashAlt, FaStar } from "react-icons/fa";
-import { EDIT_TODO_STAT, EDIT_TODO_TEXT, DELETE_TODO } from "../queries";
+import { FaPen, FaStar } from "react-icons/fa";
+import { EDIT_TODO_STAT, EDIT_TODO_TEXT } from "../queries";
 import { useMutation } from "@apollo/react-hooks";
 import { StatType } from "../constants";
 import { observer } from "mobx-react";
+import { TodoDeleteButton } from ".";
 
 const StyledTodoItem = styled.li`
   display: flex;
@@ -76,9 +77,8 @@ const TodoItem: React.FC<TodoItemProps> = observer(
 
     const [editText] = useMutation(EDIT_TODO_TEXT);
     const [editStat] = useMutation(EDIT_TODO_STAT);
-    const [removeTodo] = useMutation(DELETE_TODO);
 
-    const handleEditClick = (e: React.MouseEvent) => {
+    const handleEditClick = () => {
       setEditing(true);
     };
 
@@ -97,17 +97,6 @@ const TodoItem: React.FC<TodoItemProps> = observer(
 
         setEditing(false);
       }
-    };
-
-    const handleDelete = async (e: React.MouseEvent) => {
-      e.preventDefault();
-
-      const item = await removeTodo({
-        variables: { id: id }
-      });
-
-      const todo = item.data.deleteTodo;
-      deleteTodo(todo.id);
     };
 
     const handleToggleLike = async (e: React.MouseEvent) => {
@@ -160,7 +149,7 @@ const TodoItem: React.FC<TodoItemProps> = observer(
         {renderTitle()}
         <StyledIcon>
           <FaPen onClick={handleEditClick} />
-          <FaTrashAlt onClick={handleDelete} />
+          <TodoDeleteButton id={id} deleteTodo={deleteTodo} />
           <FaStar
             onClick={handleToggleLike}
             color={stat === StatType.BOOKMARKED ? "#d7c938" : ""}

@@ -5,6 +5,7 @@ import FolderInput from "./FolderInput";
 import { FolderItem } from ".";
 import { Folder } from "../models";
 import FolderStore from "../stores/folder";
+import { useStores } from "../stores";
 
 const StyledFolderListContainer = styled.section`
   display: flex;
@@ -21,10 +22,13 @@ const StyledFolderList = styled.ul`
 `;
 
 export interface FolderListProps {
-  folderStore: FolderStore;
+  data: FolderStore;
 }
 
-const FolderList: React.FC<FolderListProps> = observer(({ folderStore }) => {
+const FolderList: React.FC<FolderListProps> = observer(({ data }) => {
+  const { folderStore } = useStores();
+  folderStore.initialize(data.folders);
+
   return (
     <StyledFolderListContainer>
       <FolderInput newFolder={folderStore.newFolder} />
