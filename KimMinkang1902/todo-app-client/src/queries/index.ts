@@ -78,7 +78,7 @@ export const EDIT_TODO_STAT = gql`
 `;
 
 export const DELETE_TODO = gql`
-  mutation DELETE_TODO($id: String!) {
+  mutation DeleteTodo($id: String!) {
     deleteTodo(id: $id) {
       id
     }
