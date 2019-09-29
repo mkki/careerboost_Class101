@@ -52,6 +52,7 @@ const TodoInput: React.FC<TodoInputProps> = ({ folderId, newTodo }) => {
       <StyledInput
         type="text"
         placeholder="Add Todo"
+        value={inputValue}
         onChange={handleChange}
         onKeyPress={handleKeyPress}
       />
