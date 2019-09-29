@@ -21,12 +21,12 @@ const StyledInput = styled.input`
   background: #fafafa;
 `;
 
-interface FolderInputProps {
+interface TodoInputProps {
   folderId: string;
   newTodo: (item: Todo) => void;
 }
 
-const TodoInput: React.FC<FolderInputProps> = ({ folderId, newTodo }) => {
+const TodoInput: React.FC<TodoInputProps> = ({ folderId, newTodo }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [addTodo] = useMutation(ADD_TODO);
 
