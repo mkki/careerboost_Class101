@@ -54,7 +54,6 @@ const TodoList: React.FC<TodoListProps> = observer(({ todoStore }) => {
             editTodoStat={todoStore.editTodoStat}
             editTodoText={todoStore.editTodoText}
             deleteTodo={todoStore.deleteTodo}
-            toggleEditing={todoStore.toggleEditing}
           />
         ))}
       </StyledTodoList>

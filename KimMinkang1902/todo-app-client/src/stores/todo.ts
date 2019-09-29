@@ -61,17 +61,6 @@ class TodoStore {
     this.filter = filter;
   };
 
-  @action
-  toggleEditing = (id: string) => {
-    this.todos = this.todos.map(todo => {
-      if (todo.id === id) {
-        todo.editing = !todo.editing;
-      }
-
-      return todo;
-    });
-  };
-
   @computed
   get activeTodos() {
     return this.todos.filter(todo => todo.stat !== StatType.DONE);

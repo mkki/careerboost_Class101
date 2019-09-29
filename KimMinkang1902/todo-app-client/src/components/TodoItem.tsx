@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FaPen, FaTrashAlt, FaStar } from "react-icons/fa";
 import { EDIT_TODO_STAT, EDIT_TODO_TEXT, DELETE_TODO } from "../queries";
@@ -64,31 +64,38 @@ interface TodoItemProps {
   id: string;
   text: string;
   stat: string;
-  editing: boolean;
-  editTodoText: (id: string, text: string) => any;
-  editTodoStat: (id: string, stat: string) => any;
-  deleteTodo: (id: string) => any;
-  toggleEditing: (id: string) => any;
+  editTodoText: (id: string, text: string) => void;
+  editTodoStat: (id: string, stat: string) => void;
+  deleteTodo: (id: string) => void;
 }
 
 const TodoItem: React.FC<TodoItemProps> = observer(
-  ({ id, text, stat, editing, editTodoText, editTodoStat, deleteTodo, toggleEditing }) => {
-    const inputRef = useRef<any>();
+  ({ id, text, stat, editTodoText, editTodoStat, deleteTodo }) => {
+    const [editing, setEditing] = useState<boolean>(false);
+    const [inputValue, setInputValue] = useState<string>("");
+
     const [editText] = useMutation(EDIT_TODO_TEXT);
     const [editStat] = useMutation(EDIT_TODO_STAT);
     const [removeTodo] = useMutation(DELETE_TODO);
 
-    const handleEdit = () => toggleEditing(id);
+    const handleEditClick = (e: React.MouseEvent) => {
+      setEditing(true);
+    };
 
-    const handleKeyPress = async (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        const editedText = inputRef.current.value;
-        const item: any = await editText({
-          variables: { id: id, text: editedText }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.currentTarget.value);
+    };
+
+    const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && inputValue) {
+        const item = await editText({
+          variables: { id: id, text: inputValue }
         });
 
         const todo = item.data.editTodo;
-        editTodoText(todo.id, editedText);
+        editTodoText(todo.id, todo.text);
+
+        setEditing(false);
       }
     };
 
@@ -131,7 +138,14 @@ const TodoItem: React.FC<TodoItemProps> = observer(
 
     const renderTitle = () => {
       if (editing) {
-        return <StyledEditing type="text" ref={inputRef} onKeyPress={handleKeyPress} />;
+        return (
+          <StyledEditing
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
       }
 
       return (
@@ -145,7 +159,7 @@ const TodoItem: React.FC<TodoItemProps> = observer(
       <StyledTodoItem>
         {renderTitle()}
         <StyledIcon>
-          <FaPen onClick={handleEdit} />
+          <FaPen onClick={handleEditClick} />
           <FaTrashAlt onClick={handleDelete} />
           <FaStar
             onClick={handleToggleLike}
