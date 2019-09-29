@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { FaPen, FaStar } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { EDIT_TODO_STAT, EDIT_TODO_TEXT } from "../queries";
 import { useMutation } from "@apollo/react-hooks";
 import { StatType } from "../constants";
 import { observer } from "mobx-react";
 import { TodoDeleteButton } from ".";
+import TodoLikeButton from "./TodoLikeButton";
 
 const StyledTodoItem = styled.li`
   display: flex;
@@ -99,19 +100,6 @@ const TodoItem: React.FC<TodoItemProps> = observer(
       }
     };
 
-    const handleToggleLike = async (e: React.MouseEvent) => {
-      e.preventDefault();
-
-      const editedStat = stat === StatType.BOOKMARKED ? StatType.ACTIVE : StatType.BOOKMARKED;
-
-      const item = await editStat({
-        variables: { id: id, stat: editedStat }
-      });
-
-      const todo = item.data.editTodo;
-      editTodoStat(todo.id, todo.stat);
-    };
-
     const handleToggleDone = async (e: React.MouseEvent) => {
       e.preventDefault();
 
@@ -125,35 +113,24 @@ const TodoItem: React.FC<TodoItemProps> = observer(
       editTodoStat(todo.id, todo.stat);
     };
 
-    const renderTitle = () => {
-      if (editing) {
-        return (
+    return (
+      <StyledTodoItem>
+        {editing ? (
           <StyledEditing
             type="text"
             value={inputValue}
             onChange={handleChange}
             onKeyPress={handleKeyPress}
           />
-        );
-      }
-
-      return (
-        <StyledText className={stat === StatType.DONE ? "done" : ""} onClick={handleToggleDone}>
-          {text}
-        </StyledText>
-      );
-    };
-
-    return (
-      <StyledTodoItem>
-        {renderTitle()}
+        ) : (
+          <StyledText className={stat === StatType.DONE ? "done" : ""} onClick={handleToggleDone}>
+            {text}
+          </StyledText>
+        )}
         <StyledIcon>
           <FaPen onClick={handleEditClick} />
           <TodoDeleteButton id={id} deleteTodo={deleteTodo} />
-          <FaStar
-            onClick={handleToggleLike}
-            color={stat === StatType.BOOKMARKED ? "#d7c938" : ""}
-          />
+          <TodoLikeButton id={id} stat={stat} editTodoStat={editTodoStat} />
         </StyledIcon>
       </StyledTodoItem>
     );
