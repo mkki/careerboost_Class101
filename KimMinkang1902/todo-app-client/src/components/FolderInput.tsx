@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { ADD_FOLDER } from "../queries";
 import { Folder } from "../models";
@@ -22,29 +22,39 @@ const StyledInput = styled.input`
 `;
 
 interface FolderInputProps {
-  newFolder: (item: Folder) => any;
+  newFolder: (item: Folder) => void;
 }
 
 const FolderInput: React.FC<FolderInputProps> = ({ newFolder }) => {
-  const inputRef = useRef<any>();
-
+  const [inputValue, setInputValue] = useState<string>("");
   const [addFolder] = useMutation(ADD_FOLDER);
 
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      const item: any = await addFolder({
-        variables: { title: inputRef.current.value }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.currentTarget.value);
+  };
+
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue) {
+      const item = await addFolder({
+        variables: { title: inputValue }
       });
-      inputRef.current.value = "";
 
       const folder = item.data.addFolder;
       newFolder(new Folder(folder.id, folder.title));
+
+      setInputValue("");
     }
   };
 
   return (
     <StyledInputContainer>
-      <StyledInput placeholder="Add Folder" ref={inputRef} onKeyPress={handleKeyPress} />
+      <StyledInput
+        type="text"
+        placeholder="Add Folder"
+        value={inputValue}
+        onChange={handleChange}
+        onKeyPress={handleKeyPress}
+      />
     </StyledInputContainer>
   );
 };

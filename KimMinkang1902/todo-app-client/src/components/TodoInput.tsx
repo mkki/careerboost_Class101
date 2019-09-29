@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { ADD_TODO } from "../queries";
 import { Todo } from "../models";
@@ -23,29 +23,38 @@ const StyledInput = styled.input`
 
 interface FolderInputProps {
   folderId: string;
-  newTodo: (item: Todo) => any;
+  newTodo: (item: Todo) => void;
 }
 
 const TodoInput: React.FC<FolderInputProps> = ({ folderId, newTodo }) => {
-  const inputRef = useRef<any>();
-
+  const [inputValue, setInputValue] = useState<string>("");
   const [addTodo] = useMutation(ADD_TODO);
 
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      const item: any = await addTodo({
-        variables: { text: inputRef.current.value, folderId: folderId }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.currentTarget.value);
+  };
+
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue) {
+      const item = await addTodo({
+        variables: { text: inputValue, folderId: folderId }
       });
-      inputRef.current.value = "";
 
       const todo = item.data.addTodo;
       newTodo(new Todo(todo.id, todo.text, todo.folderId));
+
+      setInputValue("");
     }
   };
 
   return (
     <StyledInputContainer>
-      <StyledInput placeholder="Add Todo" ref={inputRef} onKeyPress={handleKeyPress} />
+      <StyledInput
+        type="text"
+        placeholder="Add Todo"
+        onChange={handleChange}
+        onKeyPress={handleKeyPress}
+      />
     </StyledInputContainer>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { FaPen, FaTrashAlt } from "react-icons/fa";
@@ -66,34 +66,45 @@ const StyledEditing = styled.input`
 interface FolderItemProps {
   id: string;
   title: string;
-  editFolder: (id: string, title: string) => any;
-  deleteFolder: (id: string) => any;
+  editFolder: (id: string, title: string) => void;
+  deleteFolder: (id: string) => void;
 }
 
 const FolderItem: React.FC<FolderItemProps> = ({ id, title, editFolder, deleteFolder }) => {
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef<any>();
+  const [editing, setEditing] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("");
+
   const [editFolderTitle] = useMutation(EDIT_FOLDER_TITLE);
   const [removeFolder] = useMutation(DELETE_FOLDER);
 
   const renderItem = () => {
     if (editing) {
-      return <StyledEditing type="text" ref={inputRef} onKeyPress={handleKeyPress} />;
+      return (
+        <StyledEditing
+          type="text"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyPress={handleKeyPress}
+        />
+      );
     }
     return <StyledLink to={`/folders/${id}`}>{title}</StyledLink>;
   };
 
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      const editedTitle = inputRef.current.value;
-      const item: any = await editFolderTitle({
-        variables: { id: id, title: editedTitle }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.currentTarget.value);
+  };
+
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue) {
+      const item = await editFolderTitle({
+        variables: { id: id, title: inputValue }
       });
 
-      setEditing(false);
-      renderItem();
       const folder = item.data.editFolder;
-      editFolder(folder.id, editedTitle);
+      editFolder(folder.id, folder.title);
+
+      setEditing(false);
     }
   };
 
