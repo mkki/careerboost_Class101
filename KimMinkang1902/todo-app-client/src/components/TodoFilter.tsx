@@ -3,8 +3,9 @@ import styled from "styled-components";
 import TodoStore from "../stores/todo";
 import { observer } from "mobx-react";
 
-const StyledFilter = styled.div`
+const StyledFilter = styled.li`
   margin: 0 5px;
+  list-style: none;
 `;
 
 const StyledButton = styled.button`

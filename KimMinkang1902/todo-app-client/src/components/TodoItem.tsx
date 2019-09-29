@@ -6,7 +6,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { StatType } from "../constants";
 import { observer } from "mobx-react";
 
-const StyledTodoItem = styled.div`
+const StyledTodoItem = styled.li`
   display: flex;
   position: relative;
   font-size: 1.2rem;
@@ -52,7 +52,6 @@ const StyledEditing = styled.input`
   font-size: 16px;
   border: solid 1px #dbdbdb;
   border-radius: 3px;
-  color: #262626;
   padding: 7px 33px;
   border-radius: 3px;
   color: #999;

@@ -5,7 +5,7 @@ import { FolderContainer, TodoContainer, NotFoundContainer } from "./containers"
 import { Header } from "./components";
 import styled from "styled-components";
 
-const StyledAppContainer = styled.div`
+const StyledAppContainer = styled.main`
   font-size: 16px;
   min-height: 840px;
 `;

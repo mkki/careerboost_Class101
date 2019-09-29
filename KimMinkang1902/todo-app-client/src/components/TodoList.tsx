@@ -6,7 +6,7 @@ import TodoItem from "./TodoItem";
 import { observer } from "mobx-react";
 import { Todo } from "../models";
 
-const StyledTodoList = styled.div`
+const StyledTodoListContainer = styled.section`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -16,11 +16,16 @@ const StyledTodoList = styled.div`
   text-align: center;
 `;
 
-const StyledFolderTitle = styled.div`
+const StyledFolderTitle = styled.h2`
   margin-bottom: 15px;
   color: #005da0;
   font-size: 1.5rem;
   font-weight: 700;
+`;
+
+const StyledTodoList = styled.ul`
+  margin: 0 auto;
+  padding: 0;
 `;
 
 interface TodoListProps {
@@ -37,21 +42,23 @@ const TodoList: React.FC<TodoListProps> = observer(({ todoStore }) => {
   };
 
   return (
-    <StyledTodoList>
+    <StyledTodoListContainer>
       <StyledFolderTitle>{todoStore.folderTitle}</StyledFolderTitle>
       <TodoInput folderId={todoStore.folderId} newTodo={todoStore.newTodo} />
 
-      {filteredTodos().map((todo: Todo) => (
-        <TodoItem
-          {...todo}
-          key={todo.id}
-          editTodoStat={todoStore.editTodoStat}
-          editTodoText={todoStore.editTodoText}
-          deleteTodo={todoStore.deleteTodo}
-          toggleEditing={todoStore.toggleEditing}
-        />
-      ))}
-    </StyledTodoList>
+      <StyledTodoList>
+        {filteredTodos().map((todo: Todo) => (
+          <TodoItem
+            {...todo}
+            key={todo.id}
+            editTodoStat={todoStore.editTodoStat}
+            editTodoText={todoStore.editTodoText}
+            deleteTodo={todoStore.deleteTodo}
+            toggleEditing={todoStore.toggleEditing}
+          />
+        ))}
+      </StyledTodoList>
+    </StyledTodoListContainer>
   );
 });
 

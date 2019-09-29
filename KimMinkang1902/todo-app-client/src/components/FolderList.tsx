@@ -6,13 +6,18 @@ import { FolderItem } from ".";
 import { Folder } from "../models";
 import FolderStore from "../stores/folder";
 
-const StyledFolderList = styled.div`
+const StyledFolderListContainer = styled.section`
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: 1010px;
   width: 100%;
-  margin: 20px auto;
+  margin: 20px 0;
+`;
+
+const StyledFolderList = styled.ul`
+  margin: 0 auto;
+  padding: 0;
 `;
 
 export interface FolderListProps {
@@ -21,17 +26,19 @@ export interface FolderListProps {
 
 const FolderList: React.FC<FolderListProps> = observer(({ folderStore }) => {
   return (
-    <StyledFolderList>
+    <StyledFolderListContainer>
       <FolderInput newFolder={folderStore.newFolder} />
-      {folderStore.folders.map((folder: Folder) => (
-        <FolderItem
-          {...folder}
-          key={folder.id}
-          editFolder={folderStore.editFolder}
-          deleteFolder={folderStore.deleteFolder}
-        />
-      ))}
-    </StyledFolderList>
+      <StyledFolderList>
+        {folderStore.folders.map((folder: Folder) => (
+          <FolderItem
+            {...folder}
+            key={folder.id}
+            editFolder={folderStore.editFolder}
+            deleteFolder={folderStore.deleteFolder}
+          />
+        ))}
+      </StyledFolderList>
+    </StyledFolderListContainer>
   );
 });
 

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const StyledHeaderContainer = styled.div`
+const StyledHeaderContainer = styled.header`
   background-color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.0975);
 `;
@@ -15,7 +15,7 @@ const StyledHeader = styled.div`
   padding: 20px;
 `;
 
-const StyledTitle = styled.div`
+const StyledTitle = styled.h1`
   flex-grow: 2;
   margin: 0;
   font-size: 2rem;
@@ -23,17 +23,11 @@ const StyledTitle = styled.div`
   text-align: left;
 `;
 
-const StyledNavigation = styled.div`
-  flex-grow: 1;
-  text-align: right;
-`;
-
 const Header: React.FC = () => {
   return (
     <StyledHeaderContainer>
       <StyledHeader>
         <StyledTitle>Hello, Todo App!</StyledTitle>
-        <StyledNavigation />
       </StyledHeader>
     </StyledHeaderContainer>
   );

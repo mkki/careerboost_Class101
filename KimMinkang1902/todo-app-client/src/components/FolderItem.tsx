@@ -5,7 +5,7 @@ import { FaPen, FaTrashAlt } from "react-icons/fa";
 import { EDIT_FOLDER_TITLE, DELETE_FOLDER } from "../queries";
 import { useMutation } from "@apollo/react-hooks";
 
-const StyledFolderItem = styled.div`
+const StyledFolderItem = styled.li`
   display: flex;
   position: relative;
   font-size: 1.2rem;
